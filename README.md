@@ -424,16 +424,20 @@ Restock a sweet and increase inventory quantity (Admin only).
 Screenshots of the application will be added here to showcase the user interface and functionality.
 
 ### User Dashboard
-![User Dashboard](screenshots/user-dashboard.png)
+![User Dashboard](<img width="1917" height="617" alt="image" src="https://github.com/user-attachments/assets/edae3d3d-60d6-4dff-a6d9-dd9e05176444" />
+)
 
 ### Admin Panel
-![Admin Panel](screenshots/admin-panel.png)
+![Admin Panel](<img width="1918" height="729" alt="image" src="https://github.com/user-attachments/assets/8193b302-40ba-405e-a062-0c0b63f49cc4" />
+)
 
 ### Search Functionality
-![Search Results](screenshots/search-results.png)
+![Search Results](<img width="1305" height="280" alt="image" src="https://github.com/user-attachments/assets/89c76fff-ee51-419a-b8a9-92931f10490c" />
+)
 
 ### Purchase Flow
-![Purchase Process](screenshots/purchase-flow.png)
+![Purchase Process](<img width="1100" height="268" alt="image" src="https://github.com/user-attachments/assets/c2ed7ea4-ca05-4c41-9206-8ecd66072569" />
+)
 
 ## My AI Usage
 
@@ -463,4 +467,5 @@ This project is developed for educational and portfolio purposes. All code is av
 ---
 
 **Developed with modern web technologies and best practices in full-stack development.**
+
 
