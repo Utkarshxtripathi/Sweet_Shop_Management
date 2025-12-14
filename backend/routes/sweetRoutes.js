@@ -1,8 +1,4 @@
-/**
- * Sweet Routes
- * Handles all sweet-related operations (CRUD)
- * Includes inventory management (purchase, restock)
- */
+
 
 import express from 'express';
 import Sweet from '../models/Sweet.js';
@@ -10,11 +6,7 @@ import { protect, admin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-/**
- * @route   GET /api/sweets
- * @desc    Get all sweets (with optional query filters)
- * @access  Private
- */
+
 router.get('/', protect, async (req, res, next) => {
   try {
     const sweets = await Sweet.find().sort({ createdAt: -1 });
@@ -24,19 +16,15 @@ router.get('/', protect, async (req, res, next) => {
   }
 });
 
-/**
- * @route   GET /api/sweets/search
- * @desc    Search sweets by name, category, or price range
- * @access  Private
- */
+
 router.get('/search', protect, async (req, res, next) => {
   try {
     const { name, category, minPrice, maxPrice } = req.query;
     const query = {};
 
-    // Build search query
+    
     if (name) {
-      query.name = { $regex: name, $options: 'i' }; // Case-insensitive search
+      query.name = { $regex: name, $options: 'i' }; 
     }
 
     if (category) {
@@ -60,11 +48,6 @@ router.get('/search', protect, async (req, res, next) => {
   }
 });
 
-/**
- * @route   GET /api/sweets/:id
- * @desc    Get single sweet by ID
- * @access  Private
- */
 router.get('/:id', protect, async (req, res, next) => {
   try {
     const sweet = await Sweet.findById(req.params.id);
@@ -79,11 +62,6 @@ router.get('/:id', protect, async (req, res, next) => {
   }
 });
 
-/**
- * @route   POST /api/sweets
- * @desc    Create a new sweet
- * @access  Private/Admin
- */
 router.post('/', protect, admin, async (req, res, next) => {
   try {
     const { name, category, price, quantity, description } = req.body;
@@ -109,11 +87,7 @@ router.post('/', protect, admin, async (req, res, next) => {
   }
 });
 
-/**
- * @route   PUT /api/sweets/:id
- * @desc    Update a sweet
- * @access  Private/Admin
- */
+
 router.put('/:id', protect, admin, async (req, res, next) => {
   try {
     const { name, category, price, quantity, description } = req.body;
@@ -124,7 +98,7 @@ router.put('/:id', protect, admin, async (req, res, next) => {
       return res.status(404).json({ message: 'Sweet not found' });
     }
 
-    // Update fields
+    
     if (name) sweet.name = name;
     if (category) sweet.category = category;
     if (price !== undefined) sweet.price = parseFloat(price);
@@ -139,11 +113,7 @@ router.put('/:id', protect, admin, async (req, res, next) => {
   }
 });
 
-/**
- * @route   DELETE /api/sweets/:id
- * @desc    Delete a sweet
- * @access  Private/Admin
- */
+
 router.delete('/:id', protect, admin, async (req, res, next) => {
   try {
     const sweet = await Sweet.findById(req.params.id);
@@ -160,11 +130,6 @@ router.delete('/:id', protect, admin, async (req, res, next) => {
   }
 });
 
-/**
- * @route   POST /api/sweets/:id/purchase
- * @desc    Purchase a sweet (decrease quantity)
- * @access  Private
- */
 router.post('/:id/purchase', protect, async (req, res, next) => {
   try {
     const { quantity = 1 } = req.body;
@@ -197,11 +162,7 @@ router.post('/:id/purchase', protect, async (req, res, next) => {
   }
 });
 
-/**
- * @route   POST /api/sweets/:id/restock
- * @desc    Restock a sweet (increase quantity)
- * @access  Private/Admin
- */
+
 router.post('/:id/restock', protect, admin, async (req, res, next) => {
   try {
     const { quantity } = req.body;
