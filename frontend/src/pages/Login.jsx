@@ -1,35 +1,25 @@
-/**
- * Login Page
- * Handles user authentication
- * Business logic separated from UI - uses AuthContext for state management
- */
-
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import Input from '../components/Input';
-import Button from '../components/Button';
-import Alert from '../components/Alert';
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import Input from "../components/Input";
+import Button from "../components/Button";
+import Alert from "../components/Alert";
 
 const Login = () => {
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
-  
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-  // Redirect if already authenticated
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard', { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   }, [isAuthenticated, navigate]);
-
-  // Avoid flashing the login form while redirecting
   if (isAuthenticated) return null;
 
   const handleChange = (e) => {
@@ -37,24 +27,23 @@ const Login = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setError(''); // Clear error on input change
+    setError("");
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
       const result = await login(formData);
-      
+
       if (result.success) {
-        navigate('/dashboard');
+        navigate("/dashboard");
       } else {
-        setError(result.error || 'Login failed. Please try again.');
+        setError(result.error || "Login failed. Please try again.");
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +57,7 @@ const Login = () => {
             Sign in to Sweet Shop
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
+            Or{" "}
             <Link
               to="/register"
               className="font-medium text-blue-600 hover:text-blue-500"
@@ -80,7 +69,7 @@ const Login = () => {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <Alert type="error" message={error} onClose={() => setError('')} />
+            <Alert type="error" message={error} onClose={() => setError("")} />
           )}
 
           <div className="space-y-4">
@@ -112,7 +101,7 @@ const Login = () => {
               disabled={isLoading}
               className="w-full"
             >
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {isLoading ? "Signing in..." : "Sign in"}
             </Button>
           </div>
         </form>
@@ -122,4 +111,3 @@ const Login = () => {
 };
 
 export default Login;
-

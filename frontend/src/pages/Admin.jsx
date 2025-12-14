@@ -1,23 +1,17 @@
-/**
- * Admin Page
- * Admin-only page for managing sweets (CRUD operations)
- * Business logic separated from UI - uses API service layer
- */
-
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import {
   getSweets,
   createSweet,
   updateSweet,
   deleteSweet,
   restockSweet,
-} from '../services/api';
-import Loading from '../components/Loading';
-import Alert from '../components/Alert';
-import Button from '../components/Button';
-import Input from '../components/Input';
+} from "../services/api";
+import Loading from "../components/Loading";
+import Alert from "../components/Alert";
+import Button from "../components/Button";
+import Input from "../components/Input";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -26,102 +20,74 @@ const Admin = () => {
   const isAdminUser = isAdmin();
   const [sweets, setSweets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingSweet, setEditingSweet] = useState(null);
   const [restockingSweet, setRestockingSweet] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
-    category: '',
-    price: '',
-    quantity: '',
-    description: '',
+    name: "",
+    category: "",
+    price: "",
+    quantity: "",
+    description: "",
   });
-  const [restockQuantity, setRestockQuantity] = useState('');
-
-  /**
-   * Redirect if not admin
-   */
+  const [restockQuantity, setRestockQuantity] = useState("");
   useEffect(() => {
     if (!isAdminUser) {
-      navigate('/dashboard', { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   }, [isAdminUser, navigate]);
-
-  /**
-   * Fetch sweets on component mount
-   */
   useEffect(() => {
     fetchSweets();
   }, []);
-
-  /**
-   * Fetch all sweets from API
-   */
   const fetchSweets = async () => {
     try {
       setIsLoading(true);
-      setError('');
+      setError("");
       const data = await getSweets();
       setSweets(Array.isArray(data) ? data : data.sweets || []);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load sweets');
+      setError(err.response?.data?.message || "Failed to load sweets");
     } finally {
       setIsLoading(false);
     }
   };
-
-  /**
-   * Handle form input changes
-   */
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
-
-  /**
-   * Reset form to initial state
-   */
   const resetForm = () => {
     setFormData({
-      name: '',
-      category: '',
-      price: '',
-      quantity: '',
-      description: '',
+      name: "",
+      category: "",
+      price: "",
+      quantity: "",
+      description: "",
     });
     setEditingSweet(null);
     setShowAddForm(false);
   };
-
-  /**
-   * Handle add sweet form submission
-   */
   const handleAddSweet = async (e) => {
     e.preventDefault();
     try {
-      setError('');
-      setSuccess('');
+      setError("");
+      setSuccess("");
       const sweetData = {
         ...formData,
         price: parseFloat(formData.price),
         quantity: parseInt(formData.quantity),
       };
       await createSweet(sweetData);
-      setSuccess('Sweet added successfully!');
+      setSuccess("Sweet added successfully!");
       resetForm();
       await fetchSweets();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to add sweet');
+      setError(err.response?.data?.message || "Failed to add sweet");
     }
   };
-
-  /**
-   * Handle edit sweet - populate form with existing data
-   */
   const handleEditClick = (sweet) => {
     setEditingSweet(sweet);
     setFormData({
@@ -129,71 +95,59 @@ const Admin = () => {
       category: sweet.category,
       price: sweet.price.toString(),
       quantity: sweet.quantity.toString(),
-      description: sweet.description || '',
+      description: sweet.description || "",
     });
     setShowAddForm(true);
   };
-
-  /**
-   * Handle update sweet form submission
-   */
   const handleUpdateSweet = async (e) => {
     e.preventDefault();
     try {
-      setError('');
-      setSuccess('');
+      setError("");
+      setSuccess("");
       const sweetData = {
         ...formData,
         price: parseFloat(formData.price),
         quantity: parseInt(formData.quantity),
       };
       await updateSweet(editingSweet._id || editingSweet.id, sweetData);
-      setSuccess('Sweet updated successfully!');
+      setSuccess("Sweet updated successfully!");
       resetForm();
       await fetchSweets();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update sweet');
+      setError(err.response?.data?.message || "Failed to update sweet");
     }
   };
-
-  /**
-   * Handle delete sweet
-   */
   const handleDeleteSweet = async (sweetId, sweetName) => {
     if (!window.confirm(`Are you sure you want to delete "${sweetName}"?`)) {
       return;
     }
     try {
-      setError('');
-      setSuccess('');
+      setError("");
+      setSuccess("");
       await deleteSweet(sweetId);
-      setSuccess('Sweet deleted successfully!');
+      setSuccess("Sweet deleted successfully!");
       await fetchSweets();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to delete sweet');
+      setError(err.response?.data?.message || "Failed to delete sweet");
     }
   };
-
-  /**
-   * Handle restock sweet
-   */
   const handleRestock = async (e) => {
     e.preventDefault();
     try {
-      setError('');
-      setSuccess('');
+      setError("");
+      setSuccess("");
       const quantity = parseInt(restockQuantity);
       if (quantity <= 0) {
-        setError('Restock quantity must be greater than 0');
+        setError("Restock quantity must be greater than 0");
         return;
       }
       await restockSweet(restockingSweet._id || restockingSweet.id, quantity);
       setSuccess(`Successfully restocked ${restockingSweet.name}!`);
       setRestockingSweet(null);
-      setRestockQuantity('');
+      setRestockQuantity("");
       await fetchSweets();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to restock sweet');
+      setError(err.response?.data?.message || "Failed to restock sweet");
     }
   };
 
@@ -211,10 +165,7 @@ const Admin = () => {
             <p className="text-sm text-gray-600">Manage sweets inventory</p>
           </div>
           <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              onClick={() => navigate('/dashboard')}
-            >
+            <Button variant="secondary" onClick={() => navigate("/dashboard")}>
               Dashboard
             </Button>
             <Button variant="secondary" onClick={logout}>
@@ -230,7 +181,7 @@ const Admin = () => {
         {showAddForm && (
           <div className="bg-white p-6 rounded-lg shadow mb-6">
             <h2 className="text-lg font-semibold mb-4">
-              {editingSweet ? 'Edit Sweet' : 'Add New Sweet'}
+              {editingSweet ? "Edit Sweet" : "Add New Sweet"}
             </h2>
             <form
               onSubmit={editingSweet ? handleUpdateSweet : handleAddSweet}
@@ -277,7 +228,7 @@ const Admin = () => {
               />
               <div className="flex gap-2">
                 <Button type="submit" variant="primary">
-                  {editingSweet ? 'Update Sweet' : 'Add Sweet'}
+                  {editingSweet ? "Update Sweet" : "Add Sweet"}
                 </Button>
                 <Button type="button" variant="secondary" onClick={resetForm}>
                   Cancel
@@ -304,13 +255,13 @@ const Admin = () => {
 
         {/* Alerts */}
         {error && (
-          <Alert type="error" message={error} onClose={() => setError('')} />
+          <Alert type="error" message={error} onClose={() => setError("")} />
         )}
         {success && (
           <Alert
             type="success"
             message={success}
-            onClose={() => setSuccess('')}
+            onClose={() => setSuccess("")}
           />
         )}
 
@@ -371,19 +322,14 @@ const Admin = () => {
                         </Button>
                         <Button
                           variant="secondary"
-                          onClick={() =>
-                            setRestockingSweet(sweet)
-                          }
+                          onClick={() => setRestockingSweet(sweet)}
                         >
                           Restock
                         </Button>
                         <Button
                           variant="danger"
                           onClick={() =>
-                            handleDeleteSweet(
-                              sweet._id || sweet.id,
-                              sweet.name
-                            )
+                            handleDeleteSweet(sweet._id || sweet.id, sweet.name)
                           }
                         >
                           Delete
@@ -423,7 +369,7 @@ const Admin = () => {
                   variant="secondary"
                   onClick={() => {
                     setRestockingSweet(null);
-                    setRestockQuantity('');
+                    setRestockQuantity("");
                   }}
                 >
                   Cancel
@@ -438,4 +384,3 @@ const Admin = () => {
 };
 
 export default Admin;
-

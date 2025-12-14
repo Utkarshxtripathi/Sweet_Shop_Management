@@ -1,89 +1,62 @@
-/**
- * Dashboard Page
- * Main page for all authenticated users
- * Displays sweets list with search and purchase functionality
- * Business logic separated from UI components
- */
-
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { getSweets, searchSweets, purchaseSweet } from '../services/api';
-import Loading from '../components/Loading';
-import Alert from '../components/Alert';
-import Button from '../components/Button';
-import Input from '../components/Input';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { getSweets, searchSweets, purchaseSweet } from "../services/api";
+import Loading from "../components/Loading";
+import Alert from "../components/Alert";
+import Button from "../components/Button";
+import Input from "../components/Input";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, logout, isAdmin } = useAuth();
   const [sweets, setSweets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [searchParams, setSearchParams] = useState({
-    name: '',
-    category: '',
-    minPrice: '',
-    maxPrice: '',
+    name: "",
+    category: "",
+    minPrice: "",
+    maxPrice: "",
   });
-
-  /**
-   * Fetch sweets on component mount
-   */
   useEffect(() => {
     fetchSweets();
   }, []);
-
-  /**
-   * Fetch all sweets from API
-   */
   const fetchSweets = async () => {
     try {
       setIsLoading(true);
-      setError('');
+      setError("");
       const data = await getSweets();
       setSweets(Array.isArray(data) ? data : data.sweets || []);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load sweets');
+      setError(err.response?.data?.message || "Failed to load sweets");
     } finally {
       setIsLoading(false);
     }
   };
-
-  /**
-   * Handle search form submission
-   */
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      setError('');
-      
-      // Build search params object (remove empty values)
+      setError("");
       const params = Object.fromEntries(
-        Object.entries(searchParams).filter(([_, v]) => v !== '')
+        Object.entries(searchParams).filter(([_, v]) => v !== "")
       );
-      
       const data = await searchSweets(params);
       setSweets(Array.isArray(data) ? data : data.sweets || []);
     } catch (err) {
-      setError(err.response?.data?.message || 'Search failed');
+      setError(err.response?.data?.message || "Search failed");
     } finally {
       setIsLoading(false);
     }
   };
-
-  /**
-   * Handle purchase action
-   */
   const handlePurchase = async (sweetId, sweetName) => {
     try {
-      setError('');
-      setSuccess('');
+      setError("");
+      setSuccess("");
       await purchaseSweet(sweetId, 1);
       setSuccess(`Successfully purchased ${sweetName}!`);
-      // Refresh sweets list to update quantities
       await fetchSweets();
     } catch (err) {
       setError(
@@ -91,26 +64,18 @@ const Dashboard = () => {
       );
     }
   };
-
-  /**
-   * Handle search input changes
-   */
   const handleSearchChange = (e) => {
     setSearchParams({
       ...searchParams,
       [e.target.name]: e.target.value,
     });
   };
-
-  /**
-   * Clear search and reset to all sweets
-   */
   const handleClearSearch = () => {
     setSearchParams({
-      name: '',
-      category: '',
-      minPrice: '',
-      maxPrice: '',
+      name: "",
+      category: "",
+      minPrice: "",
+      maxPrice: "",
     });
     fetchSweets();
   };
@@ -133,10 +98,7 @@ const Dashboard = () => {
           </div>
           <div className="flex gap-2">
             {isAdmin() && (
-              <Button
-                variant="secondary"
-                onClick={() => navigate('/admin')}
-              >
+              <Button variant="secondary" onClick={() => navigate("/admin")}>
                 Admin Panel
               </Button>
             )}
@@ -152,7 +114,10 @@ const Dashboard = () => {
         {/* Search Form */}
         <div className="bg-white p-6 rounded-lg shadow mb-6">
           <h2 className="text-lg font-semibold mb-4">Search Sweets</h2>
-          <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <form
+            onSubmit={handleSearch}
+            className="grid grid-cols-1 md:grid-cols-4 gap-4"
+          >
             <Input
               label="Name"
               name="name"
@@ -200,13 +165,13 @@ const Dashboard = () => {
 
         {/* Alerts */}
         {error && (
-          <Alert type="error" message={error} onClose={() => setError('')} />
+          <Alert type="error" message={error} onClose={() => setError("")} />
         )}
         {success && (
           <Alert
             type="success"
             message={success}
-            onClose={() => setSuccess('')}
+            onClose={() => setSuccess("")}
           />
         )}
 
@@ -216,11 +181,7 @@ const Dashboard = () => {
         ) : sweets.length === 0 ? (
           <div className="bg-white p-8 rounded-lg shadow text-center">
             <p className="text-gray-600">No sweets found.</p>
-            <Button
-              variant="primary"
-              onClick={fetchSweets}
-              className="mt-4"
-            >
+            <Button variant="primary" onClick={fetchSweets} className="mt-4">
               Refresh
             </Button>
           </div>
@@ -236,13 +197,15 @@ const Dashboard = () => {
                     {sweet.name}
                   </h3>
                   <p className="text-sm text-gray-600 mb-2">
-                    Category: <span className="font-medium">{sweet.category}</span>
+                    Category:{" "}
+                    <span className="font-medium">{sweet.category}</span>
                   </p>
                   <p className="text-lg font-bold text-blue-600 mb-2">
                     ₹{sweet.price}
                   </p>
                   <p className="text-sm text-gray-600 mb-4">
-                    Quantity: <span className="font-medium">{sweet.quantity}</span>
+                    Quantity:{" "}
+                    <span className="font-medium">{sweet.quantity}</span>
                   </p>
                   {sweet.description && (
                     <p className="text-sm text-gray-500 mb-4 line-clamp-2">
@@ -251,11 +214,13 @@ const Dashboard = () => {
                   )}
                   <Button
                     variant="primary"
-                    onClick={() => handlePurchase(sweet._id || sweet.id, sweet.name)}
+                    onClick={() =>
+                      handlePurchase(sweet._id || sweet.id, sweet.name)
+                    }
                     disabled={sweet.quantity === 0}
                     className="w-full"
                   >
-                    {sweet.quantity === 0 ? 'Out of Stock' : 'Purchase'}
+                    {sweet.quantity === 0 ? "Out of Stock" : "Purchase"}
                   </Button>
                 </div>
               </div>
@@ -268,4 +233,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
